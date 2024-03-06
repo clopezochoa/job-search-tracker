@@ -107,12 +107,13 @@ export function JobEnd(props: Job) {
       <div className="timeline-middle">
         <Icon/>
       </div>
-      <div className="timeline-end mb-10">
+      <div className="timeline-end md:text-start mb-10">
         <time className="font-mono italic">{propsSecure.date}</time>
         <div>
           <details className="collapse bg-base-200">
-            <summary className="collapse-title text-lg font-black">
-              <button className="btn btn-warning me-5">
+            <summary className="ms-4 collapse-title text-lg font-black">
+              {propsSecure.company}
+              <button className="btn btn-warning ms-5">
                 <a href={propsSecure.link}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -120,7 +121,6 @@ export function JobEnd(props: Job) {
                   {propsSecure.status}
                 </a>
               </button>
-              {propsSecure.company}
             </summary>
             <div className="collapse-content"> 
               <ul>
