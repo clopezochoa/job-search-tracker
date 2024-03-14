@@ -1,11 +1,12 @@
 import React from 'react'
-import Clock from './clock';
+import {Clock} from './clock';
+import { ToolsToggle } from './tools';
 
 function Navbar() {
   return(
-    <div className="navbar navbar-custom bg-base-300 z-10 flex justify-between">
+    <div className="navbar navbar-custom bg-base-300 z-[1] flex justify-between">
       <div className="px-2">
-        <a className="btn btn-ghost text-xl">Job Listing Tool</a>
+        <ToolsToggle/>
       </div>
       <div className="px-2 grid text-center">
         <span className='text-xl subpixel-antialiased'>NOW</span>
