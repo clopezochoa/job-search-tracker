@@ -1,5 +1,5 @@
 import React from 'react'
-import Icon from './timeline/icon'
+import Icon from '../timeline/icon'
 
 export enum JobStatus {
   new = "new",
