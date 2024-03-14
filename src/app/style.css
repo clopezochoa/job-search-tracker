@@ -7,3 +7,13 @@
 .right{
   right:0;
 }
+
+.animate-opacity-visible {
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.animate-opacity-hidden {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
