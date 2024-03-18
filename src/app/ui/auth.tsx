@@ -35,9 +35,9 @@ export function Login({hide}:{hide:() => void}) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
         });
-        const user = await token.json() as UserData;
-        if(user) {
-          setCookie(CookieSymbol.session, JSON.stringify(user), {
+        const user = await token.json();
+        if(user && user.message !== "Error") {
+          setCookie(CookieSymbol.session, JSON.stringify(user as UserData), {
             path: "/",
             maxAge: 3600,
             sameSite: "strict",
@@ -45,7 +45,7 @@ export function Login({hide}:{hide:() => void}) {
           sessionContext?.updateSession(createSession(true, user));
           hide();
         } else {
-          throw new Error("No email or password HTML element was found.")
+          throw new Error("Error while authenticating.")
         }
       }
     } catch (error) {
