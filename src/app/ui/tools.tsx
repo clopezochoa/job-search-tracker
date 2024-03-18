@@ -46,21 +46,23 @@ interface FilterToolProps {
   filterType:FilterType,
 }
 
-function DatePickerComponent(key: string, onChange?: (date: Date) => void) {
-  const [date, setDate] = useState(new Date());
+function DatePickerComponent(filterType: FilterType, onChange?: (date: Date) => void, initialDate?: Date) {
+  const [date, setDate] = useState(initialDate ?? new Date());
 
   useEffect(() => {
     onChange ? onChange(date) : null;
   }, [date]);
   
   return(
-    <div key={key}>
+    <div key={filterType}>
       <DatePicker
+        id={filterType}
         dateFormat="dd/MM/yyyy"
         selected={date}
         onChange={(dateEvt: Date) => setDate(dateEvt)}
       />
     </div>
+
   );
 }
 
@@ -93,29 +95,29 @@ function FilterToolComponent({placeholder, filterType}:FilterToolProps) {
     }
   }  
 
-  const getFilter = (filterType:FilterType): FilterModel => {
+  const getFilter = (): FilterModel => {
     switch (filterType) {
       case FilterType.include:
         return({
-          jsx:<input type="text" className="grow" placeholder={placeholder} onChange={(e) => handleSetting(e.target.value, FilterType.include)} />,
+          jsx:<input id={filterType} defaultValue={settings?.include} type="text" className="grow" placeholder={placeholder} onChange={(e) => handleSetting(e.target.value, FilterType.include)} />,
           icon: PlusIcon
         });
 
       case FilterType.exclude:
         return({
-          jsx:<input type="text" className="grow" placeholder={placeholder} onChange={(e) => handleSetting(e.target.value, FilterType.exclude)} />,
+          jsx:<input id={filterType} defaultValue={settings?.exclude} type="text" className="grow" placeholder={placeholder} onChange={(e) => handleSetting(e.target.value, FilterType.exclude)} />,
           icon: MinusIcon
         });
 
       case FilterType.dateStart:
         return({
-          jsx: DatePickerComponent(FilterType.dateStart, (date: Date) => {handleSetting(date, FilterType.dateStart)}),
+          jsx: DatePickerComponent(FilterType.dateStart, (date: Date) => {handleSetting(date, FilterType.dateStart)}, settings?.dateStart),
           icon: CalendarIcon
         });
 
       case FilterType.dateEnd:
         return({
-          jsx: DatePickerComponent(FilterType.dateEnd, (date: Date) => {handleSetting(date, FilterType.dateEnd)}),
+          jsx: DatePickerComponent(FilterType.dateEnd, (date: Date) => {handleSetting(date, FilterType.dateEnd)}, settings?.dateEnd),
           icon: CalendarIcon
         });
 
@@ -127,7 +129,7 @@ function FilterToolComponent({placeholder, filterType}:FilterToolProps) {
     }
   }
 
-  const filter = getFilter(filterType);
+  const filter = getFilter();
   return (<>
     <label className="input input-bordered flex items-center gap-2">
       {filter.jsx}
@@ -140,8 +142,11 @@ function FilterToolComponent({placeholder, filterType}:FilterToolProps) {
 export function Tools({sessionContext}: {sessionContext: SessionContextModel}) {
   const initialToggle = sessionContext?.session.user?.settings?.isTools;
   const [toggle, setToggle] = useState(initialToggle !== undefined ? initialToggle : false);
+
   useEffect(() => {
-    if(sessionContext?.session.user?.settings?.isTools !== undefined) setToggle(sessionContext.session.user.settings.isTools)
+    if(sessionContext?.session.user?.settings?.isTools !== undefined) {
+      setToggle(sessionContext.session.user.settings.isTools);
+    }
   }, [sessionContext]);
 
   return (<>
