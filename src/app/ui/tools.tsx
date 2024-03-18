@@ -1,11 +1,32 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { createSettings, useSettings } from '../providers/context'
+import { CookieSymbol, SessionContextModel, createSettings, useSession } from '../providers/context'
 import "@/app/style.css"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { CalendarIcon, MinusIcon, PlusIcon } from '../icons'
+import useSettings from '../hooks/useSettings'
+import { useCookies } from 'react-cookie'
+
+export function ToolsToggle({sessionContext}: {sessionContext: SessionContextModel}) {
+  const cookie = useCookies([CookieSymbol.session]);
+  const setSettings = useSettings;
+  const initialToggle = sessionContext?.session.user?.settings?.isTools;
+  const [toggle, setToggle] = useState<boolean>(initialToggle !== undefined ? initialToggle : false);
+
+  return(
+    <div>
+      <label className="label cursor-pointer">
+        <span className="label-text me-6 text-xl">Tools</span>
+        <input checked={toggle} type="checkbox" className="toggle" onChange={() => {
+          setToggle(toggle => !toggle);
+          if(sessionContext?.session.isSession) setSettings({isTools: !toggle}, sessionContext, cookie);
+        }}/>
+      </label>
+    </div>
+  )
+}
 
 enum FilterType {
   include = "include",
@@ -44,34 +65,36 @@ function DatePickerComponent(key: string, onChange?: (date: Date) => void) {
 }
 
 function FilterToolComponent({placeholder, filterType}:FilterToolProps) {
-  const settings = useSettings();
+  const sessionContext = useSession();
+  const setSettings = useSettings;
+  const cookie = useCookies([CookieSymbol.session]);
+  const settings = sessionContext?.session.user?.settings;
 
   const handleSetting = (value: string | Date, type: FilterType) => {
-    if(settings) {
-      var currentSettings = createSettings(settings.settings);
+    if(settings && sessionContext.session.isSession) {
+      var currentSettings = createSettings(settings);
       switch (type) {
         case FilterType.include:
-          if(typeof value === "string") currentSettings = createSettings(settings.settings, {include: value});
+          if(typeof value === "string") currentSettings = createSettings(settings, {include: value});
           break;
         case FilterType.exclude:
-          if(typeof value === "string") currentSettings = createSettings(settings.settings, {exclude: value});
+          if(typeof value === "string") currentSettings = createSettings(settings, {exclude: value});
           break;
         case FilterType.dateStart:
-          if(value instanceof Date) currentSettings = createSettings(settings.settings, {dateStart: value});
+          if(value instanceof Date) currentSettings = createSettings(settings, {dateStart: value});
           break;
         case FilterType.dateEnd:
-          if(value instanceof Date) currentSettings = createSettings(settings.settings, {dateEnd: value});
+          if(value instanceof Date) currentSettings = createSettings(settings, {dateEnd: value});
           break;
         default:
           break;
       }
-      settings.updateSettings(currentSettings)
+      setSettings(currentSettings, sessionContext, cookie);
     }
   }  
 
   const getFilter = (filterType:FilterType): FilterModel => {
     switch (filterType) {
-
       case FilterType.include:
         return({
           jsx:<input type="text" className="grow" placeholder={placeholder} onChange={(e) => handleSetting(e.target.value, FilterType.include)} />,
@@ -114,32 +137,23 @@ function FilterToolComponent({placeholder, filterType}:FilterToolProps) {
   )
 }
 
-export function ToolsToggle() {
-  const settings = useSettings();
-  const [toggle, setToggle] = useState(false);
-
+export function Tools({sessionContext}: {sessionContext: SessionContextModel}) {
+  const initialToggle = sessionContext?.session.user?.settings?.isTools;
+  const [toggle, setToggle] = useState(initialToggle !== undefined ? initialToggle : false);
   useEffect(() => {
-    settings?.updateSettings(createSettings(settings.settings, {isTools: toggle}));
-  }, [toggle]);
+    if(sessionContext?.session.user?.settings?.isTools !== undefined) setToggle(sessionContext.session.user.settings.isTools)
+  }, [sessionContext]);
 
-  return(
-    <div>
-      <label className="label cursor-pointer">
-        <span className="label-text me-6 text-xl">Tools</span>
-        <input type="checkbox" className="toggle" onChange={() => setToggle(toggle => !toggle)}/>
-      </label>
-    </div>
-  )
-}
-
-export default function Tools() {
-  const settings = useSettings();
   return (<>
-    <ul className={`${!settings?.settings.isTools ? "animate-opacity-hidden" : "animate-opacity-visible"} z-[1] menu p-2 shadow bg-base-100 rounded-box w-52`}>
+  {sessionContext?.session.isSession ? 
+    <ul className={`${!toggle ? "animate-opacity-hidden" : "animate-opacity-visible"} z-[1] menu p-2 shadow bg-base-100 rounded-box w-52`}>
       <FilterToolComponent placeholder='Include' filterType={FilterType.include}/>
       <FilterToolComponent placeholder='Exclude' filterType={FilterType.exclude}/>
       <FilterToolComponent placeholder='Date Start' filterType={FilterType.dateStart} />
       <FilterToolComponent placeholder='Date End' filterType={FilterType.dateEnd} />
     </ul>
+:
+<></>
+  }
   </>)
 }
