@@ -27,6 +27,18 @@ export interface JobData {
   provider?: string;
 }
 
+export enum JobInput {
+  _id = "_id",
+  key = "key",
+  company = "company",
+  events = "events",
+  role = "role",
+  exp = "exp",
+  candidacies = "candidacies",
+  fav = "fav",
+  provider = "provider",
+}
+
 export interface EventData {
   status: JobStatus;
   time: Date;
