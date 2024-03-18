@@ -1,26 +1,16 @@
 import React from 'react'
-import { Job } from '../ui/job'
-import { getMomentFormatted } from '@/app/lib';
+import { getMomentFormatted } from '@/app/client-lib';
+import useJobs from '../hooks/useJobs';
 
-function Timeline() {
-  const mockjobs = Array.from(Array(30));
+export function Timeline() {
+  const jobs = useJobs();
+  const events = jobs.flatMap((job) => job.events).sort((a, b) => a.time.getMilliseconds() - b.time.getMilliseconds());
   const time = getMomentFormatted();
+
   return (<>
     <ul className="timeline timeline-vertical">
-      {mockjobs.map((job, index) => {
-        if(index % 2 === 0) {
-          return (<>
-            <Job start date={time}/>
-          </>)
-        } else {
-          return (<>
-            <Job end date={time}/>
-          </>)
-        }
-      })}
+
     </ul>
   </>
   )
 }
-
-export default Timeline
