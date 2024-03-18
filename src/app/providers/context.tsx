@@ -30,10 +30,10 @@ export function createSettings(
   ) {  
   return {
     isTools: (args?.isTools !== undefined ? args.isTools : clone?.isTools) ?? false,
-    include: (args?.include ? args.include : clone?.include) ?? "",
-    exclude: (args?.exclude ? args.exclude : clone?.exclude) ?? "",
-    dateStart: (args?.dateStart ? args.dateStart : clone?.dateStart) ?? new Date(),
-    dateEnd: (args?.dateEnd ? args.dateEnd : clone?.dateEnd) ?? new Date(),
+    include: (args?.include !== undefined ? args.include : clone?.include) ?? "",
+    exclude: (args?.exclude !== undefined ? args.exclude : clone?.exclude) ?? "",
+    dateStart: (args?.dateStart !== undefined ? args.dateStart : clone?.dateStart) ?? new Date(),
+    dateEnd: (args?.dateEnd !== undefined ? args.dateEnd : clone?.dateEnd) ?? new Date(),
   }
 }
 
