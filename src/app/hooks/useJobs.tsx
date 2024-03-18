@@ -15,7 +15,7 @@ function useJobs() {
 
     if(jobsCookie) {
       if(jobsCookie.message !== "Error") {
-        return jobsCookie as Array<JobData>;
+        setJobs(jobs);
       }
     }
     const body = sessionContext?.session.user?.key;
@@ -43,6 +43,7 @@ function useJobs() {
   useEffect(() => {
     if(sessionContext?.session.user?.key) getJobs();
   }, [sessionContext?.session])
+  
   return jobs;
 }
 

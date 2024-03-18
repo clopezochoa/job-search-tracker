@@ -1,6 +1,7 @@
 import moment from "moment";
 import { Id } from "./server-lib";
 import { SettingsModel } from "./providers/context";
+import { ObjectId } from "mongodb";
 
 export function getMomentFormatted(){
   return `${moment().format('dddd')} ${moment().format('Do')} ${moment().format('MMMM')} ${moment().format('h:mm:ss a')}`;
@@ -43,10 +44,11 @@ export interface EventData {
   status: JobStatus;
   time: Date;
   notes?: string;
+  signature?: ObjectId;
 }
 
 export enum JobStatus {
-  potential = "potential",
+  new = "new",
   applied = "applied",
   interview = "interview",
   offer = "offer",
