@@ -3,9 +3,9 @@ import { connectDatabase } from "../../server-lib";
 import { SettingsModel } from "@/app/providers/context";
 
 const postSettings = async (settings: SettingsModel, key: string) => {
-  if(process.env.JOBS) {
-    const {client, collection} = await connectDatabase(process.env.JOBS);
-    const user = await collection.findOne({ key: key});
+  if(process.env.USERS) {
+    const {client, collection} = await connectDatabase(process.env.USERS);
+    const user = await collection.findOne({key: key});
     if(user) {
       const result = await collection.updateOne({ _id: user._id}, { $set: { settings: settings } })
       await client.close();
