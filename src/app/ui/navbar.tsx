@@ -32,7 +32,7 @@ function Navbar() {
       </> : <></>
     }
     <div className="navbar navbar-custom bg-base-300 z-[1] flex justify-between">
-      <div className="px-2">
+      <div className="px-2 min-w-96">
       {client && sessionCtx?.session.isSession ? 
         <ToolsToggle sessionContext={sessionCtx}/>
       :<></>}
@@ -41,7 +41,7 @@ function Navbar() {
         <span className='text-xl subpixel-antialiased'>NOW</span>
         <Clock/>
       </div>
-      <div className="flex justify-end px-4">
+      <div className="flex justify-end px-4 min-w-96">
         <div className="flex items-stretch">
           {
             client && sessionCtx?.session.isSession ? 
