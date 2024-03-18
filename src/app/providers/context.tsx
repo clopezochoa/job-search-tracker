@@ -1,6 +1,14 @@
 'use client'
 
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { UserData } from "../client-lib";
+import { useCookies } from "react-cookie";
+import { CookiesProvider } from "react-cookie";
+
+export enum CookieSymbol {
+  session = "job-query-session",
+  jobs = "job-query-jobs",
+}
 
 export interface SettingsModel {
   isTools?: boolean,
@@ -21,58 +29,80 @@ export function createSettings(
   }
   ) {  
   return {
-    isTools: args?.isTools !== undefined ? args.isTools : clone?.isTools,
-    include: args?.include ? args.include : clone?.include,
-    exclude: args?.exclude ? args.exclude : clone?.exclude,
-    dateStart: args?.dateStart ? args.dateStart : clone?.dateStart,
-    dateEnd: args?.dateEnd ? args.dateEnd : clone?.dateEnd,
+    isTools: (args?.isTools !== undefined ? args.isTools : clone?.isTools) ?? false,
+    include: (args?.include ? args.include : clone?.include) ?? "",
+    exclude: (args?.exclude ? args.exclude : clone?.exclude) ?? "",
+    dateStart: (args?.dateStart ? args.dateStart : clone?.dateStart) ?? new Date(),
+    dateEnd: (args?.dateEnd ? args.dateEnd : clone?.dateEnd) ?? new Date(),
   }
 }
 
-export function cloneSettings(
-  settings: SettingsModel
-) {
-  return {
-    isTools: settings.isTools,
-    include: settings.include,
-    exclude: settings.exclude,
-    dateStart: settings.dateStart,
-    dateEnd: settings.dateEnd,
-  }
-}
-
-type SettingsContextModel = {
-  settings: SettingsModel;
+export type SessionContextModel = {
+  session: Session;
+  updateSession: (session: Session) => void;
   updateSettings: (settings: SettingsModel) => void;
 }
 
-const defaultSettings = {
-  isTools: false,
-  include: "",
-  exclude: "",
-  dateStart: new Date(),
-  dateEnd: new Date(),
-} as SettingsModel;
+export interface Session {
+  isSession: boolean;
+  user: UserData | null;
+}
+
+export function createSession(isSession: boolean = false, user?: UserData){
+  return { isSession: isSession, user: user } as Session;
+}
 
 const ClientLoadCtx = createContext(false);
-export const SettingsCtx = createContext<SettingsContextModel | null>(null);
+export const SessionCtx = createContext<SessionContextModel | null>(null);
 
 export const ContextProvider = ({ children }:{children: ReactNode}) => {
   const [clientLoad, setClientLoad] = useState(false);
-  const [currentSettingsContext, setCurrentSettingsContext] = useState(defaultSettings);
-
-  const updateSettings = (settings: SettingsModel) => {
-    setCurrentSettingsContext(settings);
-  }
 
   useEffect(() => setClientLoad(true), []);
 
+  const [cookie, setCookie] = useCookies([CookieSymbol.session]);
+
+  let isSessionInitial = { isSession: false, user: null } as Session;
+  const userSessionCookie = cookie[CookieSymbol.session];
+  if (userSessionCookie) {
+    if(userSessionCookie.message !== "Error") {
+      isSessionInitial = userSessionCookie;
+    }
+  }
+  
+  const [currentSessionContext, setCurrentSessionContext] = useState(isSessionInitial);
+
+  const updateSession = (session: Session) => {
+    setCurrentSessionContext(session);
+  }
+
+  const updateSettings = (settings: SettingsModel) => { 
+    if(currentSessionContext && currentSessionContext.isSession && currentSessionContext.user) {
+      console.log(currentSessionContext.user.settings)
+      console.log(settings)
+      setCurrentSessionContext(
+        {
+          isSession: currentSessionContext.isSession,
+          user: {
+            key: currentSessionContext.user.key,
+            name: currentSessionContext.user.name,
+            email: currentSessionContext.user.email,
+            password: currentSessionContext.user.password,
+            settings: createSettings(currentSessionContext.user.settings, settings)  
+          }
+        } as Session
+      )
+    }
+  }
+
   return (
-    <ClientLoadCtx.Provider value={clientLoad}>
-      <SettingsCtx.Provider value={{settings: currentSettingsContext, updateSettings}}>
-        {children}
-      </SettingsCtx.Provider>
-    </ClientLoadCtx.Provider>
+    <CookiesProvider>
+      <SessionCtx.Provider value={{session: currentSessionContext, updateSession, updateSettings}}>
+        <ClientLoadCtx.Provider value={clientLoad}>
+          {children}
+        </ClientLoadCtx.Provider>
+      </SessionCtx.Provider>
+    </CookiesProvider>
   );
 };
 
@@ -80,6 +110,6 @@ export function useIsClient() {
   return useContext(ClientLoadCtx);
 }
 
-export function useSettings() {
-  return useContext(SettingsCtx);
+export function useSession() {
+  return useContext(SessionCtx);
 }
