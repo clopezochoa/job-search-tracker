@@ -5,7 +5,6 @@ import Main from './ui';
 
 export default function Home() {
   return (<>
-    <PostModal/>
     <Navbar/>
     <Main/>
   </>

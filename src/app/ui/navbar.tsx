@@ -6,13 +6,16 @@ import { CookieSymbol, createSession, useIsClient, useSession } from '../provide
 import { Login, Signup } from './auth';
 import { useCookies } from 'react-cookie';
 import { ToolsToggle } from './tools';
+import PostModal from './post-modal';
 
 function Navbar() {
   const client = useIsClient();
   const sessionCtx = useSession();
   const [toggleSignup, setToggleSignup] = useState(false);
   const [toggleLogin, setToggleLogin] = useState(false);
-  const [cookie, setCookie, removeCookie] = useCookies([CookieSymbol.session]);
+  const [togglePost, setTogglePost] = useState(false);
+  const cookies = useCookies([CookieSymbol.session]);
+  const removeCookie = cookies[2];
 
   const handleLogout = () => {
     sessionCtx?.updateSession(createSession(false));
@@ -25,6 +28,7 @@ function Navbar() {
       client ? <>
       {toggleSignup ? <Signup hide={() => setToggleSignup(false)} /> : null}
       {toggleLogin ? <Login hide={() => setToggleLogin(false)} /> : null}
+      {togglePost ? <PostModal hide={() => setTogglePost(false)}/> : null}
       </> : <></>
     }
     <div className="navbar navbar-custom bg-base-300 z-[1] flex justify-between">
@@ -50,7 +54,7 @@ function Navbar() {
               <>
                 <div tabIndex={0} role="button" className="btn btn-ghost rounded-btn">Menu</div>
                 <ul tabIndex={0} className="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
-                  <li><label htmlFor="post-a-job" className="btn">Post a job</label></li>
+                  <li><button onClick={() => setTogglePost(true)} className="btn">Post a job</button></li>
                   <li><a href='https://www.lopezochoa.com' target="_blank" rel="noopener noreferrer">Portfolio</a></li>
                   <li><a>Linktree</a></li>
                   <li><a>Linkedin</a></li>
