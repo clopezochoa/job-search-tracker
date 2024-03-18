@@ -32,7 +32,6 @@ function useSettings(settings: SettingsModel, sessionContext: SessionContextMode
     } catch (error) {
       console.error(error)
     }
-    console.log("🚀 ~ postSettings ~ body:", body)
   }
   if(sessionContext?.session.isSession) sessionContext.updateSettings(settings);
   postSettings(settings);

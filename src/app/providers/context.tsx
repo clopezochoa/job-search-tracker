@@ -78,8 +78,6 @@ export const ContextProvider = ({ children }:{children: ReactNode}) => {
 
   const updateSettings = (settings: SettingsModel) => { 
     if(currentSessionContext && currentSessionContext.isSession && currentSessionContext.user) {
-      console.log(currentSessionContext.user.settings)
-      console.log(settings)
       setCurrentSessionContext(
         {
           isSession: currentSessionContext.isSession,
