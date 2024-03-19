@@ -151,7 +151,7 @@ export function Tools({sessionContext}: {sessionContext: SessionContextModel}) {
 
   return (<>
   {sessionContext?.session.isSession ? 
-    <ul className={`${!toggle ? "animate-opacity-hidden" : "animate-opacity-visible"} z-[1] menu p-2 shadow bg-base-100 rounded-box`}>
+    <ul className={`${!toggle ? "animate-opacity-hidden" : "animate-opacity-visible"} menu p-2 shadow bg-base-100 rounded-box`}>
       <FilterToolComponent placeholder='Include' filterType={FilterType.include}/>
       <FilterToolComponent placeholder='Exclude' filterType={FilterType.exclude}/>
       <FilterToolComponent placeholder='Date Start' filterType={FilterType.dateStart} />
