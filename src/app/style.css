@@ -17,3 +17,8 @@
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
 }
+
+.right-panel li{
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
