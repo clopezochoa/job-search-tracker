@@ -38,6 +38,10 @@ export enum JobInput {
   candidacies = "candidacies",
   fav = "fav",
   provider = "provider",
+  notes = "notes",
+  location = "location",
+  keywords = "keywords",
+  status = "status",
 }
 
 export interface EventData {

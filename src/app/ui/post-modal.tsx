@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { CompanyIcon, EmailIcon, KeyIcon, RoleIcon } from '../icons'
+import { CompanyIcon, EmailIcon, ExperienceIcon, KeyIcon, LocationIcon, RoleIcon } from '../icons'
 import Modal from './modal'
 import { CookieSymbol, createSession, createSettings, useSession } from '../providers/context';
 import { useCookies } from 'react-cookie';
@@ -23,7 +23,7 @@ function PostModal({hide}:{hide:() => void}) {
     //     return;
     //   }
     // }
-    
+
     var formData = {} as JobData;
     function storeInput(input: Element | null) {
       if(input) {
@@ -84,24 +84,54 @@ function PostModal({hide}:{hide:() => void}) {
 
   interface FormItem {
     jsx: React.JSX.Element,
-    icon: React.JSX.Element
+    icon?: React.JSX.Element
   }
 
   const company = {
-    jsx: <input id={JobInput.company} required type="text" className="grow" placeholder="Company" />,
-    icon: CompanyIcon
+    jsx: <input id={JobInput.company} required type="text" className="font-bold grow capitalize text-4xl text-center placeholder-opacity-0" placeholder={JobInput.company}  />,
   }
   const role = {
-    jsx: <input id={JobInput.role} required type="text" className="grow" placeholder='Role'/>,
-    icon: RoleIcon
+    jsx: <input id={JobInput.role} type="text" className="grow capitalize text-2xl text-center" placeholder={JobInput.role} />,
+  }
+  const keywords = {
+    jsx: <input id={JobInput.keywords} type="text" className="grow capitalize text-sm text-center" placeholder={JobInput.keywords} />,
+  }
+  const exp = {
+    jsx: 
+      <div className='grid justify-center'>
+        <input type="range" min={0} max={3} className="range w-full" step={1} />
+        <div className='grid'>
+          <div className="w-full flex justify-between text-xs mt-2 [&>*]:w-[26px]">
+            <span>|</span>
+            <span>|</span>
+            <span>|</span>
+            <span>|</span>
+          </div>
+          <div className="w-full flex justify-between text-xs mt-2 [&>*]:w-[26px] [&>*]:text-nowrap">
+            <div className="grid justify-center [&>*]:w-12"><span>0</span></div>
+            <div className="grid justify-center [&>*]:w-12"><span>&lt; 1</span></div>
+            <div className="grid justify-center [&>*]:w-12"><span>1 - 2</span></div>
+            <div className="grid justify-center [&>*]:w-12"><span>&gt; 2</span></div>
+          </div>
+        </div>
+      </div>,
+    // jsx: <input id={JobInput.exp} required type="number" className="grow" placeholder={JobInput.exp} />,
+  }
+  const location = {
+    jsx: <input id={JobInput.location} type="text" className="grow" placeholder={JobInput.location} />,
+  }
+  const status = {
+    jsx: <input id={JobInput.status} type="text" className="grow" placeholder={JobInput.status} />,
+  }
+  const notes = {
+    jsx: <textarea id={JobInput.notes} className="grow textarea textarea-ghost" placeholder={JobInput.notes} />,
   }
 
   const formItem = (item: FormItem) => {
     return (
       <>
-        <label className="input input-bordered flex items-center gap-2">
+        <label className="flex justify-center items-center gap-2 p-10 [&>*]:bg-transparent [&>*]:capitalize [&>*]:text-center [&>*]:outline-none">
           {item.jsx}
-          {item.icon}
         </label>
       </>
     )
@@ -109,20 +139,33 @@ function PostModal({hide}:{hide:() => void}) {
 
   const itemBundle = (list: Array<FormItem>) => {
     return (<>
-      {list.map(item => formItem(item))}
+      {list.map((item, index) => {
+        return(
+          <React.Fragment key={`form-item-bundled_${index.toString()}`}>
+            {formItem(item)}
+          </React.Fragment>
+        )})
+      }
     </>)
   }
 
   return (
     <Modal hide={hide}>
-      <div ref={formRef} style={{position: "absolute", top:"25%", right:"25%", width:"50%", height:"50%", display:"grid", alignItems:"space-around"}}>
-        {/* {itemBundle([
-          email,
-          password
-        ])}; */}
-        {formItem(company)}
-        {formItem(role)}
-        <button onClick={handlePost} className="btn btn-neutral">Post</button>
+      <div ref={formRef} className='grid items-around justify-center'>
+        {itemBundle([
+          company,
+          role,
+          keywords,
+          exp,
+          location,
+          status,
+          notes
+        ])}
+        {/* {formItem(company)}
+        {formItem(role)} */}
+        <center>
+          <button onClick={handlePost} className="btn btn-neutral w-full min-w-24 max-w-48">Post</button>
+        </center>
       </div>
     </Modal>
   )
